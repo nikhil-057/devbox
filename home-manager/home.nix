@@ -153,19 +153,17 @@
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks = {
+    settings = {
       "*" = {
-        hashKnownHosts = true;
-        serverAliveInterval = 0;
-        serverAliveCountMax = 3;
-        controlMaster = "auto";
-        controlPersist = "10m";
+        HashKnownHosts = true;
+        ServerAliveInterval = 0;
+        ServerAliveCountMax = 3;
+        ControlMaster = "auto";
+        ControlPersist = "10m";
       };
       "git.blackhawknetwork.com" = {
-        userKnownHostsFile = "/dev/null";
-        extraOptions = {
-          StrictHostKeyChecking = "no";
-        };
+        UserKnownHostsFile = "/dev/null";
+        StrictHostKeyChecking = "no";
       };
     };
   };

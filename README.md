@@ -1,4 +1,4 @@
-# nix-config
+# devbox
 
 Personal portable dev environment managed with [Home Manager](https://github.com/nix-community/home-manager) and [npins](https://github.com/andir/npins). No flakes, no NixOS — runs on any Linux machine with `nix` installed.
 
@@ -8,12 +8,23 @@ Personal portable dev environment managed with [Home Manager](https://github.com
 
 ### Bootstrap on a fresh machine
 
+Requires `docker` and `git`. Clone the repo and run:
+
 ```bash
-"$(nix-build --quiet --no-out-link -A setupHomeManager \
-  https://github.com/nikhil-057/nix-config/archive/refs/tags/v8.6.tar.gz)/bin/setup-home-manager"
+mkdir -p ~/repos
+git clone git@github.com:nikhil-057/devbox.git ~/repos/devbox
+~/repos/devbox/bootstrap.sh
 ```
 
-This downloads the pinned config from the tagged release, builds it, and activates it in one shot.
+This creates a `devbox` container, installs nix, activates home-manager, and drops you into a tmux session.
+
+### Day-to-day
+
+```bash
+./enter.sh
+```
+
+Starts the container if stopped, bootstraps if it doesn't exist, and attaches to tmux.
 
 ### Update from local clone
 
@@ -21,25 +32,18 @@ This downloads the pinned config from the tagged release, builds it, and activat
 ./setup/hm.sh
 ```
 
-### Use pinned nixpkgs in a nix-shell
-
-```bash
-NIX_PATH="$("$(nix-build --quiet --no-out-link -A echoNixPath \
-  https://github.com/nikhil-057/nix-config/archive/refs/tags/v8.6.tar.gz)/bin/echo-nix-path")" \
-  nix-shell -p hello --run hello
-```
-
 ---
 
 ## Architecture
 
 ```
-nix-config/
+devbox/
+├── bootstrap.sh                 # Full container teardown and rebuild
+├── enter.sh                     # Day-to-day entry point: starts or enters the container
 ├── default.nix                  # Builds setupHomeManager script (entry point)
 ├── home-manager/
 │   ├── home.nix                 # All packages, dotfiles, git/ssh/tool configs
-│   ├── setup-hook.sh            # Bootstrap: symlinks config, runs nix-shell
-│   ├── shell.nix                # nix-shell that runs `home-manager init --switch`
+│   ├── setup-hook.sh            # Bootstrap: symlinks config, runs home-manager switch
 │   └── dotfiles/
 │       ├── init.lua             # Neovim config (lazy.nvim, LSP, treesitter, etc.)
 │       ├── tmux.conf            # tmux (vi keys, vim-tmux-navigator, pane splits)
@@ -48,7 +52,7 @@ nix-config/
 │       └── containers-policy.json  # Podman/skopeo: accept any image
 ├── npins/
 │   ├── default.nix              # npins fetcher logic (auto-generated)
-│   └── sources.json             # Pinned: nixpkgs, home-manager fork, nixvim
+│   └── sources.json             # Pinned: nixpkgs, home-manager, nixvim
 └── setup/
     ├── hm.sh                    # Local install/update shortcut
     └── npins.sh                 # Re-initialize all npins pins
@@ -56,12 +60,13 @@ nix-config/
 
 ### Bootstrap flow
 
-1. `default.nix` builds a `setup-home-manager` script with a pinned `NIX_PATH`.
-2. The script runs `home-manager/setup-hook.sh`:
+1. `bootstrap.sh` creates and starts the `devbox` Docker container.
+2. Inside the container: installs nix, runs `setup/hm.sh`.
+3. `hm.sh` builds `default.nix` → `setup-home-manager` script with pinned `NIX_PATH`.
+4. The script runs `home-manager/setup-hook.sh`:
    - Symlinks `~/.config/home-manager` → the `home-manager/` dir in this repo
    - Removes `~/.gitconfig` so Home Manager can own it
-   - Invokes `nix-shell` via `shell.nix`
-3. `shell.nix` activates the config: `home-manager init --switch --no-flake -b backup`
+   - Runs `home-manager switch -b backup`
 
 ### Dependency pinning (npins)
 
@@ -70,10 +75,8 @@ Three sources are pinned in `npins/sources.json`:
 | Pin | Source | Branch |
 |-----|--------|--------|
 | `nixpkgs` | `nixos/nixpkgs` | `nixos-unstable` |
-| `home-manager` | `nikhil-057/home-manager` | `customizable-shellhook` |
+| `home-manager` | `nix-community/home-manager` | `master` |
 | `nixvim` | `nix-community/nixvim` | `main` (reserved) |
-
-The `home-manager` pin is a personal fork that enables a configurable `shellHook` in the installer.
 
 ---
 
@@ -121,7 +124,7 @@ The `home-manager` pin is a personal fork that enables a configurable `shellHook
 - `LANG=C.UTF-8`, `LC_ALL=C.UTF-8`
 - `XAUTHORITY=$HOME/.Xauthority` (X11 over SSH fix)
 - `alias vim=nvim`
-- Auto-cd to `$HOME` if started outside it
+- Auto-cd to `~/repos` if started outside home
 - Sources `hm-session-vars.sh` and `~/.profile.d/aws-config.sh`
 
 ### AWS credentials (`home.nix` — generated at `~/.profile.d/aws-config.sh`)
@@ -224,24 +227,13 @@ Config at `dotfiles/tmux.conf`.
 
 ## Updating pins
 
-```bash
-./setup/npins.sh   # re-initialize all pins from scratch
-```
-
-Or update individual pins manually:
+Run periodically to get the latest nixpkgs and home-manager:
 ```bash
 npins update nixpkgs
 npins update home-manager
 ```
 
----
-
-## Tagging a release
-
-Tags are used in the remote bootstrap URL. After testing:
+To re-initialize all pins from scratch (e.g. after adding/removing a pin):
 ```bash
-git tag v<X.Y>
-git push origin v<X.Y>
+./setup/npins.sh
 ```
-
-Then update the tag in this README's bootstrap commands.

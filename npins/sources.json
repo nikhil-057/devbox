@@ -4,14 +4,14 @@
       "type": "Git",
       "repository": {
         "type": "GitHub",
-        "owner": "nikhil-057",
+        "owner": "nix-community",
         "repo": "home-manager"
       },
-      "branch": "customizable-shellhook",
+      "branch": "master",
       "submodules": false,
-      "revision": "852b4899d45cd9bb5c6b4fabeda64c265a78d3bc",
-      "url": "https://github.com/nikhil-057/home-manager/archive/852b4899d45cd9bb5c6b4fabeda64c265a78d3bc.tar.gz",
-      "hash": "sha256-2qt+VASYyp+8M16v7OgBJcJ1zoyHAEMMBYMKiB/cHLU="
+      "revision": "928d72376949e222ea4f07b44828a55b0136422e",
+      "url": "https://github.com/nix-community/home-manager/archive/928d72376949e222ea4f07b44828a55b0136422e.tar.gz",
+      "hash": "sha256-n1+l78hJRABp4cQHKeD0BVByT0vZLPqd09Tvoq8Q+d8="
     },
     "nixpkgs": {
       "type": "Git",
@@ -22,9 +22,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "fe416aaedd397cacb33a610b33d60ff2b431b127",
-      "url": "https://github.com/nixos/nixpkgs/archive/fe416aaedd397cacb33a610b33d60ff2b431b127.tar.gz",
-      "hash": "sha256-b/GV2ysM8mKHhinse2wz+uP37epUrSE+sAKXy/xvBY4="
+      "revision": "d233902339c02a9c334e7e593de68855ad26c4cb",
+      "url": "https://github.com/nixos/nixpkgs/archive/d233902339c02a9c334e7e593de68855ad26c4cb.tar.gz",
+      "hash": "sha256-30sZNZoA1cqF5JNO9fVX+wgiQYjB7HJqqJ4ztCDeBZE="
     },
     "nixvim": {
       "type": "Git",
@@ -35,9 +35,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "21ae25e13b01d3b4cdc750b5f9e7bad68b150c10",
-      "url": "https://github.com/nix-community/nixvim/archive/21ae25e13b01d3b4cdc750b5f9e7bad68b150c10.tar.gz",
-      "hash": "sha256-3DmCFOdmbkFML1/G9gj8Wb+rCCZFPOQtNoMCpqOF8SA="
+      "revision": "4503b3c5e99c825ca6055a393f1bb3c95e68ba16",
+      "url": "https://github.com/nix-community/nixvim/archive/4503b3c5e99c825ca6055a393f1bb3c95e68ba16.tar.gz",
+      "hash": "sha256-kNCxRBKYMzX7PC4AGiHV4MV2A0SlBvP/89LJVB/mIDs="
     }
   },
   "version": 7
