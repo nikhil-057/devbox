@@ -5,9 +5,8 @@ export XDG_DATA_HOME=${XDG_DATA_HOME:="$HOME/.local/share"}
 export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
 alias vim=nvim
-[[ "$PWD" == *"$HOME"* ]] || cd ~
+[[ "$PWD" == *"$HOME"* ]] || cd ~/repos
 export __HM_SESS_VARS_SOURCED=
 source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-source ~/.profile.d/aws-config.sh
-mkdir -p ~/repos/local_share/opencode ~/.local/share/opencode
-ln -sf ~/repos/local_share/opencode/auth.json ~/.local/share/opencode/auth.json
+[ -f ~/.profile.d/aws_config.sh ] && source ~/.profile.d/aws_config.sh
+[ -f ~/.profile.d/openai_config.sh ] && source ~/.profile.d/openai_config.sh

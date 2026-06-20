@@ -11,13 +11,14 @@ let
     config = {};
     overlays = [];
   };
+  hm = import sources.home-manager { inherit pkgs; };
   hmDir = pkgs.lib.fileset.toSource {
     root = ./home-manager;
     fileset = ./home-manager/.;
   };
 in with pkgs; {
   setupHomeManager = writeShellScriptBin "setup-home-manager" ''
-    export PATH="${lib.makeBinPath [ bash coreutils nix ]}"
+    export PATH="${lib.makeBinPath [ bash coreutils nix hm.home-manager ]}"
     export NIX_PATH="${nixPath}"
     ${hmDir}/setup-hook.sh
   '';
