@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, lib, ... }: {
 
   # Home Manager needs a bit of information about you and the paths it should manage.
   home.username = builtins.getEnv "USER";
@@ -12,6 +12,9 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "24.05"; # Please read the comment before changing.
+
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [ "claude-code" ];
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -71,6 +74,7 @@
     pkgs.typescript
     pkgs.typescript-language-server
     pkgs.opencode
+    pkgs.claude-code
     pkgs.gh
     pkgs.netcat-openbsd
     # Minimal xclip-compatible wrapper for opencode clipboard copy

@@ -7,6 +7,8 @@ command -v git &>/dev/null || { echo "git is required but not installed"; exit 1
 [ -e "$HOME/repos" ] || { echo "Cannot resolve path for repos" >&2; exit 1; }
 [ -e "$HOME/.credentials" ] || { echo "Cannot resolve path for .credentials" >&2; exit 1; }
 [ -e "$HOME/.ssh" ] || { echo "Cannot resolve path for .ssh" >&2; exit 1; }
+[ -e "$HOME/OneDrive - Soho House Group" ] || { echo "Cannot resolve path for OneDrive (personal)" >&2; exit 1; }
+[ -e "$HOME/Soho House Group" ] || { echo "Cannot resolve path for Soho House Group (shared)" >&2; exit 1; }
 
 docker rm -f devbox 2>/dev/null || true
 
@@ -20,6 +22,8 @@ docker create \
   -v $(realpath "$HOME/repos"):/root/repos \
   -v $(realpath "$HOME/.credentials"):/root/.credentials \
   -v $(realpath "$HOME/.ssh"):/root/.ssh \
+  -v "$(realpath "$HOME/OneDrive - Soho House Group")":"/root/onedrive/OneDrive - Soho House Group" \
+  -v "$(realpath "$HOME/Soho House Group")":"/root/onedrive/Soho House Group" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -p 8001:8001 \
   -p 1455:1455 \
