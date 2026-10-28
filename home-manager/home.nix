@@ -14,7 +14,7 @@
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "claude-code" ];
+    builtins.elem (lib.getName pkg) [ "claude-code" "n8n" ];
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -76,6 +76,7 @@
     pkgs.opencode
     pkgs.claude-code
     pkgs.gh
+    pkgs.n8n
     pkgs.netcat-openbsd
     # Minimal xclip-compatible wrapper for opencode clipboard copy
     (

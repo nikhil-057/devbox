@@ -141,6 +141,31 @@ git clone git@github.com:nikhil-057/devbox.git ~/repos/devbox
 ~/repos/devbox/bootstrap.sh
 ```
 
+### Bootstrap a parallel/test container (without nuking the live one)
+`bootstrap.sh`, `enter.sh`, and `connect.sh` honour two env vars:
+
+- `DEVBOX_CONTAINER` — Docker container name (default: `devbox`)
+- `DEVBOX_SKIP_CONNECT` — if set to any non-empty value, `bootstrap.sh` exits after `home-manager switch` completes instead of running `connect.sh`. Useful for non-interactive/test runs.
+
+When `DEVBOX_CONTAINER` is anything other than `devbox`:
+- the `nix-data` volume (which backs `/root`) is namespaced as `nix-data-<name>` so the live devbox's home dir is not shared or clobbered;
+- the fixed host port bindings (`8001`, `1455`) are skipped, since the live devbox is likely holding them.
+
+The `nix-store` volume is always shared — the Nix store is content-addressed, so sharing it speeds up subsequent builds safely.
+
+Example — spin up a disposable test container to validate a `home.nix` change:
+```bash
+DEVBOX_CONTAINER=devbox-test DEVBOX_SKIP_CONNECT=1 ~/repos/devbox/bootstrap.sh
+# ...iterate...
+DEVBOX_CONTAINER=devbox-test ~/repos/devbox/enter.sh   # jump in to inspect
+docker rm -f devbox-test                                # tear down when done
+docker volume rm nix-data-devbox-test                   # (optional) drop its /root
+```
+
+> **AI agents: never run `bootstrap.sh` with the default container name.** If you are an agent running inside the live `devbox` container (`$HOST_HOME` will be set), the default `DEVBOX_CONTAINER=devbox` would `docker rm -f` the container you are executing in — killing your session mid-run. Always set `DEVBOX_CONTAINER` to a disposable name (e.g. `devbox-test`) and `DEVBOX_SKIP_CONNECT=1`, then tear the test container down afterwards. Even then, prefer asking the user to run bootstrap themselves (see the final item under "What NOT to do") — only run it yourself when the user has explicitly asked you to.
+
+> **AI agents: always tear down test containers when done.** Any time you spin up a test container (e.g. `devbox-test`) to validate a change, you MUST remove it as soon as the test is complete — `docker rm -f <name>` and, if the test created a namespaced volume, `docker volume rm nix-data-<name>`. Do not leave orphan test containers running between turns or across sessions.
+
 ---
 
 ## Design constraints and conventions
@@ -168,3 +193,4 @@ git clone git@github.com:nikhil-057/devbox.git ~/repos/devbox
 - Do not add system-level NixOS configuration — this repo is user-space only.
 - Do not switch to flakes without understanding the full bootstrap chain.
 - Do not commit `~/.aws/credentials.json` or any credentials to this repo.
+- Do not run `./setup/hm.sh` (or `bootstrap.sh`) yourself unless the user asks directly. After editing `home.nix` or anything else that requires activation, tell the user what to run and let them decide — these commands rebuild the live environment and can take a long time.
