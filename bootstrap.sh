@@ -11,12 +11,14 @@ if [ -z "${HOST_HOME:-}" ]; then
   [ -e "$HOME/repos" ] || { echo "Cannot resolve path for repos" >&2; exit 1; }
   [ -e "$HOME/.credentials" ] || { echo "Cannot resolve path for .credentials" >&2; exit 1; }
   [ -e "$HOME/.ssh" ] || { echo "Cannot resolve path for .ssh" >&2; exit 1; }
+  [ -e "$HOME/.aws" ] || { echo "Cannot resolve path for .aws" >&2; exit 1; }
   [ -e "$HOME/OneDrive - Soho House Group" ] || { echo "Cannot resolve path for OneDrive (personal)" >&2; exit 1; }
   [ -e "$HOME/Soho House Group" ] || { echo "Cannot resolve path for Soho House Group (shared)" >&2; exit 1; }
   host_home_env="$(realpath "$HOME")"
   repos_src="$(realpath "$HOME/repos")"
   credentials_src="$(realpath "$HOME/.credentials")"
   ssh_src="$(realpath "$HOME/.ssh")"
+  aws_src="$(realpath "$HOME/.aws")"
   onedrive_personal_src="$(realpath "$HOME/OneDrive - Soho House Group")"
   onedrive_shared_src="$(realpath "$HOME/Soho House Group")"
 else
@@ -24,6 +26,7 @@ else
   repos_src="$HOST_HOME/repos"
   credentials_src="$HOST_HOME/.credentials"
   ssh_src="$HOST_HOME/.ssh"
+  aws_src="$HOST_HOME/.aws"
   onedrive_personal_src="$HOST_HOME/OneDrive - Soho House Group"
   onedrive_shared_src="$HOST_HOME/Soho House Group"
 fi
@@ -49,6 +52,7 @@ docker create \
   -v "$repos_src":/root/repos \
   -v "$credentials_src":/root/.credentials \
   -v "$ssh_src":/root/.ssh \
+  -v "$aws_src":/root/.aws \
   -v "$onedrive_personal_src":"/root/onedrive/OneDrive - Soho House Group" \
   -v "$onedrive_shared_src":"/root/onedrive/Soho House Group" \
   -v /var/run/docker.sock:/var/run/docker.sock \

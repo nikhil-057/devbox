@@ -135,13 +135,7 @@
 
   # aws config
   home.file.".profile.d/aws_config.sh".text = ''
-    if [ -f "$HOME/.credentials/aws_credentials.json" ]; then
-      CREDS=$(cat "$HOME/.credentials/aws_credentials.json")
-      export AWS_ACCESS_KEY_ID=$(echo "$CREDS" | jq -r ".AccessKeyId")
-      export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS" | jq -r ".SecretAccessKey")
-      export AWS_SESSION_TOKEN=$(echo "$CREDS" | jq -r ".SessionToken")
-      export AWS_DEFAULT_REGION="us-west-2";
-    fi
+    export AWS_PROFILE=alti-soho-sandbox
   '';
 
   # openai config
